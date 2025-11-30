@@ -1,11 +1,12 @@
 /**
  * @file interrupts.cpp
  * @author Sasisekhar Govind
- * @brief template main.cpp file for Assignment 3 Part 1 of SYSC4001
+ * @authors Sohaila Haroun & Zaineb BenHmida
+ * @brief Scheduling simulator for using EP&RR scheduling algorithms
  * 
  */
 
-#include<interrupts_student1_student2.hpp>
+#include"interrupts_101302936_101297624.hpp"
 
 void FCFS(std::vector<PCB> &ready_queue) {
     std::sort( 
@@ -16,6 +17,7 @@ void FCFS(std::vector<PCB> &ready_queue) {
                 } 
             );
 }
+
 
 std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std::vector<PCB> list_processes) {
 

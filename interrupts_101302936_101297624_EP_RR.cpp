@@ -16,6 +16,15 @@ void FCFS(std::vector<PCB> &ready_queue) {
                 } 
             );
 }
+void EP(std::vector<PCB> &ready_queue) {
+    std::sort( 
+                ready_queue.begin(),
+                ready_queue.end(),
+                []( const PCB &first, const PCB &second ){
+                    return (first.PID > second.PID); 
+                } 
+            );
+}
 
 std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std::vector<PCB> list_processes) {
 
