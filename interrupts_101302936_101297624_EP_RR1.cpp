@@ -17,7 +17,16 @@ void FCFS(std::vector<PCB> &ready_queue) {
                 } 
             );
 }
-
+//sort ready queue from highest priority (lowest PID) to lowest priority
+void EP(std::vector<PCB> &ready_queue) {
+    std::sort( 
+                ready_queue.begin(),
+                ready_queue.end(),
+                []( const PCB &first, const PCB &second ){
+                    return (first.PID > second.PID); 
+                } 
+            );
+}
 
 std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std::vector<PCB> list_processes) {
     std::cout << "ok we in " << std::endl;
@@ -56,7 +65,7 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
                 assign_memory(process);
 
                 process.state = READY;  //Set the process state to READY
-                ready_queue.insert(ready_queue.begin(),process); //Add the process to the ready queue
+                ready_queue.push_back(process); //Add the process to the ready queue
                 job_list.push_back(process); //Add it to the list of processes
                 std::cout << "should be writing first line here" << std::endl;
                 execution_status += print_exec_status(current_time, process.PID, NEW, READY);
@@ -74,7 +83,7 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
             if (waiting.start_time+waiting.io_freq+waiting.io_duration <= current_time){
                 execution_status += print_exec_status(current_time, waiting.PID, WAITING, READY);
                 waiting.state= READY;
-                ready_queue.insert(wait_queue.begin(),waiting);
+                ready_queue.push_back(waiting);
                 wait_queue.erase(wait_queue.begin()+wait_index);
                 std::cout << "someone is not waiting anymore" << std::endl;
 
@@ -115,7 +124,7 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
             std::cout << "ooooops?" << std::endl;
             execution_status+=print_exec_status(current_time, running.PID, RUNNING, READY);
             running.state=READY;
-            ready_queue.insert(ready_queue.begin(),running);
+            ready_queue.push_back(running);
             idle_CPU(running);
             //sync_queue(job_list, running);
         }
@@ -124,7 +133,7 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
         std::cout << "midde of scheduler but not inside" << std::endl;
         if (running.state == NOT_ASSIGNED && !ready_queue.empty()){ //if cpu idle
             std::cout << "ok we in 7" << std::endl;
-            //FCFS(ready_queue); //sort ready queue, not necessary because implemented FIFO innately
+            EP(ready_queue); 
             run_process(running,job_list,ready_queue,current_time); //run next process
             execution_status += print_exec_status(current_time, running.PID, READY, RUNNING);
         }
