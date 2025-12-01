@@ -56,6 +56,7 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
             if(process.arrival_time == current_time ) {//check if the AT = current time
                 //if so, assign memory and put the process into the ready queue
                 if (assign_memory(process)){ //if memory allocation succeeded
+                    std::cout << "memory assigned" << std::endl;
                     process.state = READY;  //Set the process state to READY
                     ready_queue.push_back(process); //Add the process to the ready queue
                     job_list.push_back(process); //Add it to the list of processes
@@ -66,6 +67,7 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
                     job_list.push_back(process);
                     sync_queue(list_processes,process);
                     memory_status += print_memory_status(current_time, job_list);
+                    std::cout << "mem aloc err" << std::endl;
                     memory_status += "Memory Allocation Failure Occured, Process will wait until memory is available.\n\n";
                 }
             } 
@@ -134,7 +136,7 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
             wait_queue.push_back(running);
             sync_queue(job_list, running); //only really important for termination
             idle_CPU(running);
-            //sync_queue(job_list, running);
+            sync_queue(job_list, running);
         }
         else if (running.state==RUNNING&&current_time-running.start_time>99)
         {
@@ -147,7 +149,7 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
         }
         
 
-        std::cout << "midde of scheduler but not inside" << std::endl;
+        std::cout << "midde of scheduler but not inside, "<<current_time << std::endl;
         if (running.state == NOT_ASSIGNED && !ready_queue.empty()){ //if cpu idle
             std::cout << "in hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 4" << std::endl;
             //FCFS(ready_queue); //sort ready queue, not necessary because implemented FIFO innately
