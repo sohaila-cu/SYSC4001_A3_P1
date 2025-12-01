@@ -1,0 +1,191 @@
+/**
+ * @file interrupts.cpp
+ * @author Sasisekhar Govind
+ * @authors Sohaila Haroun & Zaineb BenHmida
+ * @brief Scheduling simulator for using EP&RR scheduling algorithms
+ * 
+ */
+
+#include"interrupts_101302936_101297624.hpp"
+
+void FCFS(std::vector<PCB> &ready_queue) {
+    std::sort( 
+                ready_queue.begin(),
+                ready_queue.end(),
+                []( const PCB &first, const PCB &second ){
+                    return (first.arrival_time > second.arrival_time); 
+                } 
+            );
+}
+
+
+std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std::vector<PCB> list_processes) {
+    std::cout << "ok we in " << std::endl;
+    std::vector<PCB> ready_queue;   //The ready queue of processes
+    std::vector<PCB> wait_queue;    //The wait queue of processes
+    std::vector<PCB> job_list;      //A list to keep track of all the processes. This is similar
+                                    //to the "Process, Arrival time, Burst time" table that you
+                                    //see in questions. You don't need to use it, I put it here
+                                    //to make the code easier :).
+
+    unsigned int current_time = 0;
+    PCB running;
+
+    //Initialize an empty running process
+    idle_CPU(running);
+
+    std::string execution_status;
+
+    //make the output table (the header row)
+    execution_status = print_exec_header();
+
+    //Loop while till there are no ready or waiting processes.
+    //This is the main reason I have job_list, you don't have to use it.
+    while(!all_process_terminated(job_list) || job_list.empty()) {
+        std::cout << "ok we in innnn" << std::endl;
+        //Inside this loop, there are three things you must do:
+        // 1) Populate the ready queue with processes as they arrive
+        // 2) Manage the wait queue
+        // 3) Schedule processes from the ready queue
+
+        //Population of ready queue is given to you as an example.
+        //Go through the list of proceeses
+        for(auto &process : list_processes) {
+            if(process.arrival_time == current_time) {//check if the AT = current time
+                //if so, assign memory and put the process into the ready queue
+                assign_memory(process);
+
+                process.state = READY;  //Set the process state to READY
+                ready_queue.insert(ready_queue.begin(),process); //Add the process to the ready queue
+                job_list.push_back(process); //Add it to the list of processes
+                std::cout << "should be writing first line here" << std::endl;
+                execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+            }
+        }
+        std::cout << "before wait queue" << std::endl;
+
+        ///////////////////////MANAGE WAIT QUEUE/////////////////////////
+        //This mainly involves keeping track of how long a process must remain in the ready queue
+        //This mainly involves keeping track of how long a process must remain in the ready (did you mean *wait) queue
+        int wait_index = 0; //to keep track for removing
+        for(auto &waiting : wait_queue) {
+            //if this waiting process has finished doing IO, which is checked by:
+            //calc if last time it started processing was an "IO-cycle" ago (where "IO-cycle"=freq+dur)
+            if (waiting.start_time+waiting.io_freq+waiting.io_duration <= current_time){
+                execution_status += print_exec_status(current_time, waiting.PID, WAITING, READY);
+                waiting.state= READY;
+                ready_queue.insert(wait_queue.begin(),waiting);
+                wait_queue.erase(wait_queue.begin()+wait_index);
+                std::cout << "someone is not waiting anymore" << std::endl;
+
+            }
+            else{ //only increment if we didn't remove cuz they shift
+                wait_index++;
+            }
+        }
+        /////////////////////////////////////////////////////////////////
+
+        //////////////////////////SCHEDULER//////////////////////////////
+        std::cout << "before scheduler" << std::endl;
+
+        if (running.state==RUNNING&& running.remaining_time == 0) //higher priority than I/O
+        {
+            std::cout << "ok we in 6" << std::endl;
+
+            terminate_process(running,job_list);
+            execution_status += print_exec_status(current_time, running.PID, RUNNING, TERMINATED);
+            sync_queue(job_list,running);
+            idle_CPU(running);
+            //sync_queue(job_list, running);
+        }
+        else if (((running.processing_time-running.remaining_time)% running.io_freq) ==0 && running.io_freq!=0) //if time to do I/O 
+        {
+            std::cout << "ok we in 5" << std::endl;
+
+            running.state = WAITING;
+            //running.remaining_time-=running.io_freq; //not sure abt this yet, nvm remove
+            execution_status += print_exec_status(current_time, running.PID, RUNNING, WAITING);
+            wait_queue.push_back(running);
+            sync_queue(job_list, running); //only really important for termination
+            idle_CPU(running);
+            //sync_queue(job_list, running);
+        }
+        else if (running.state==RUNNING&&current_time-running.start_time>99)
+        {
+            std::cout << "ooooops?" << std::endl;
+            execution_status+=print_exec_status(current_time, running.PID, RUNNING, READY);
+            running.state=READY;
+            ready_queue.insert(ready_queue.begin(),running);
+            idle_CPU(running);
+            //sync_queue(job_list, running);
+        }
+        
+
+        std::cout << "midde of scheduler but not inside" << std::endl;
+        if (running.state == NOT_ASSIGNED && !ready_queue.empty()){ //if cpu idle
+            std::cout << "ok we in 7" << std::endl;
+            //FCFS(ready_queue); //sort ready queue, not necessary because implemented FIFO innately
+            run_process(running,job_list,ready_queue,current_time); //run next process
+            execution_status += print_exec_status(current_time, running.PID, READY, RUNNING);
+        }
+        
+        
+        std::cout << "ok we in 5" << std::endl;
+
+
+
+        /////////////////////////////////////////////////////////////////
+        if (running.state==RUNNING)
+        {
+            running.remaining_time-=1; //decrement remaining process time if running
+        }
+        
+        current_time++; //increment time once per loop
+    }
+    
+    //Close the output table
+    execution_status += print_exec_footer();
+
+    return std::make_tuple(execution_status);
+}
+
+
+int main(int argc, char** argv) {
+    std::cout << "Hello" << std::endl;
+    //Get the input file from the user
+    if(argc != 2) {
+        std::cout << "ERROR!\nExpected 1 argument, received " << argc - 1 << std::endl;
+        std::cout << "To run the program, do: ./interrutps <your_input_file.txt>" << std::endl;
+        return -1;
+    }
+    std::cout << "currently trying out RR" << std::endl;
+    //Open the input file
+    auto file_name = argv[1];
+    std::ifstream input_file;
+    input_file.open(file_name);
+
+    //Ensure that the file actually opens
+    if (!input_file.is_open()) {
+        std::cerr << "Error: Unable to open file: " << file_name << std::endl;
+        return -1;
+    }
+
+    //Parse the entire input file and populate a vector of PCBs.
+    //To do so, the add_process() helper function is used (see include file).
+    std::string line;
+    std::vector<PCB> list_process;
+    while(std::getline(input_file, line)) {
+        auto input_tokens = split_delim(line, ", ");
+        auto new_process = add_process(input_tokens);
+        list_process.push_back(new_process);
+    }
+    input_file.close();
+    std::cout << "abt to runn" << std::endl;
+
+    //With the list of processes, run the simulation
+    auto [exec] = run_simulation(list_process);
+    std::cout << "do we come back here?" << std::endl;
+    write_output(exec, "execution.txt");
+
+    return 0;
+}
