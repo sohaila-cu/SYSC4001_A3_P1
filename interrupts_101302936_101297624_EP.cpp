@@ -75,22 +75,62 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
         }
 
         ///////////////////////MANAGE WAIT QUEUE/////////////////////////
-        //This mainly involves keeping track of how long a process must remain in the ready queue
+        //This mainly involves keeping track of how long a process must remain in the ready (did you mean *wait) queue
+        int wait_index = 0; //to keep track for removing
+        for(auto &waiting : wait_queue) {
+            //if this waiting process has finished doing IO, which is checked by:
+            //calc if last time it started processing was an "IO-cycle" ago (where "IO-cycle"=freq+dur)
+            if (waiting.start_time+waiting.io_freq+waiting.io_duration <= current_time){
+                std::cout << "start-freq-dur = " << waiting.start_time+waiting.io_freq+waiting.io_duration  << std::endl;
+                execution_status += print_exec_status(current_time, waiting.PID, WAITING, READY);
+                waiting.state= READY;
+                ready_queue.push_back(waiting);
+                wait_queue.erase(wait_queue.begin()+wait_index);
+                sync_queue(job_list, waiting);
+            }
+            else{ //only increment if we didn't remove cuz they shift
+                wait_index++;
+            }
+        }
 
         /////////////////////////////////////////////////////////////////
 
         //////////////////////////SCHEDULER//////////////////////////////
         std::cout << "ok we in 4" << std::endl;
-        FCFS(ready_queue); //example of FCFS is shown here
-        running = ready_queue.front();
-        sync_queue(job_list,running);
-        running.state = TERMINATED;
-        execution_status += print_exec_status(current_time, running.PID, READY, RUNNING);
-        current_time+= running.processing_time;
+        if (running.state==RUNNING&& running.remaining_time == 0) //higher priority than I/O
+        {
+                    std::cout << "ok we in 6" << std::endl;
 
-        running.state = TERMINATED;
-        execution_status += print_exec_status(current_time, running.PID, RUNNING, TERMINATED);
-        sync_queue(job_list,running);
+            terminate_process(running,job_list);
+            execution_status += print_exec_status(current_time, running.PID, RUNNING, TERMINATED);
+            sync_queue(job_list,running);
+            idle_CPU(running);
+            //sync_queue(job_list, running);
+        }
+        else if ((current_time-running.start_time)== running.io_freq && running.io_freq!=0) //if time to do I/O
+        {
+                    std::cout << "ok we in 5" << std::endl;
+
+            running.state = WAITING;
+            //running.remaining_time-=running.io_freq; //not sure abt this yet, nvm remove
+            execution_status += print_exec_status(current_time, running.PID, RUNNING, WAITING);
+            wait_queue.push_back(running);
+            sync_queue(job_list, running); //only really important for termination
+            idle_CPU(running);
+            //sync_queue(job_list, running);
+        }
+
+
+        if (running.state == NOT_ASSIGNED && !ready_queue.empty()){ //if cpu idle
+                    std::cout << "ok we in 7" << std::endl;
+
+            EP(ready_queue); //sort ready queue
+            run_process(running,job_list,ready_queue,current_time); //run next process
+            execution_status += print_exec_status(current_time, running.PID, READY, RUNNING);
+        }
+        
+
+        
         // std::cout << "ok we in 5" << std::endl;
         // if (!all_process_terminated(job_list)){
         //     std::cout << "I'm but not terminated?" << std::endl;
@@ -101,7 +141,12 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
         // }
 
         /////////////////////////////////////////////////////////////////
-
+        if (running.state==RUNNING)
+        {
+            running.remaining_time-=1; //decrement remaining process time if running
+        }
+        
+        current_time++; //increment time once per loop
     }
     
     //Close the output table
