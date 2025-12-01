@@ -128,7 +128,7 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
             execution_status += print_exec_status(current_time, running.PID, RUNNING, TERMINATED);
             sync_queue(job_list,running);
             idle_CPU(running);
-            //sync_queue(job_list, running);
+            sync_queue(job_list, running);
         }
         else if ((current_time-running.start_time)== running.io_freq && running.io_freq!=0) //if time to do I/O
         {
@@ -139,7 +139,7 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
             wait_queue.push_back(running);
             sync_queue(job_list, running); //only really important for termination
             idle_CPU(running);
-            //sync_queue(job_list, running);
+            sync_queue(job_list, running);
         }
 
 
