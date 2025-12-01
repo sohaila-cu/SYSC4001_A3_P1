@@ -59,19 +59,35 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
         //Population of ready queue is given to you as an example.
         //Go through the list of proceeses
         for(auto &process : list_processes) {
-                std::cout << "ok we in 3" << std::endl;
-            if(process.arrival_time == current_time) {//check if the AT = current time
+            if(process.arrival_time == current_time ) {//check if the AT = current time
                 //if so, assign memory and put the process into the ready queue
-                std::cout << "ok we in 3.1" << std::endl;
-
-                assign_memory(process);
-
-                process.state = READY;  //Set the process state to READY
-                ready_queue.push_back(process); //Add the process to the ready queue
-                job_list.push_back(process); //Add it to the list of processes
-
-                execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+                if (assign_memory(process)){ //if memory allocation succeeded
+                    process.state = READY;  //Set the process state to READY
+                    ready_queue.push_back(process); //Add the process to the ready queue
+                    job_list.push_back(process); //Add it to the list of processes
+                    std::cout << "should be writing first line here" << std::endl;
+                    execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+                }else{
+                    process.state=NEW;
+                    job_list.push_back(process);
+                    sync_queue(list_processes,process);
+                    std::cout<<"Error! Memory Allocation Failed"<<std::endl;
+                }
+            } 
+            if (process.state==NEW && process.arrival_time < current_time) //it is not a new arrival but it is still waiting for memory
+            {
+                //try to assign memory and put the process into the ready queue
+                if (assign_memory(process)){ //if memory allocation succeeded
+                    process.state = READY;  //Set the process state to READY
+                    ready_queue.push_back(process); //Add the process to the ready queue
+                    job_list.push_back(process); //Add it to the list of processes
+                    std::cout << "should be writing second line here" << std::endl;
+                    execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+                }else{
+                    std::cout<<"Error! Memory Allocation Failed Again"<<std::endl;
+                }
             }
+            
         }
 
         ///////////////////////MANAGE WAIT QUEUE/////////////////////////
