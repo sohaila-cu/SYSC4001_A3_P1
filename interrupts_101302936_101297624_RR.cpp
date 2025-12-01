@@ -65,7 +65,21 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
 
         ///////////////////////MANAGE WAIT QUEUE/////////////////////////
         //This mainly involves keeping track of how long a process must remain in the ready queue
-
+        //This mainly involves keeping track of how long a process must remain in the ready (did you mean *wait) queue
+        int wait_index = 0; //to keep track for removing
+        for(auto &waiting : wait_queue) {
+            //if this waiting process has finished doing IO, which is checked by:
+            //calc if last time it started processing was an "IO-cycle" ago (where "IO-cycle"=freq+dur)
+            if (waiting.start_time+waiting.io_freq+waiting.io_duration >= current_time){
+                execution_status += print_exec_status(current_time, waiting.PID, WAITING, READY);
+                waiting.state= READY;
+                ready_queue.push_back(waiting);
+                wait_queue.erase(wait_queue.begin()+wait_index);
+            }
+            else{ //only increment if we didn't remove cuz they shift
+                wait_index++;
+            }
+        }
         /////////////////////////////////////////////////////////////////
 
         //////////////////////////SCHEDULER//////////////////////////////
