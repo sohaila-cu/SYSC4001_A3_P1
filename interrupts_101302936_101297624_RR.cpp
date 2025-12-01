@@ -29,6 +29,8 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
                                     //to make the code easier :).
 
     unsigned int current_time = 0;
+    unsigned int total_wait_time=0;
+    unsigned int turnaround_time=0;
     PCB running;
 
     //Initialize an empty running process
@@ -112,16 +114,20 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
 
         if (running.state==RUNNING&& running.remaining_time == 0) //higher priority than I/O
         {
-
+            std::cout << "terminatinggggggg 1" << std::endl;
+            turnaround_time += (current_time-running.arrival_time); //add to total
+            if (running.io_freq!=0){
+                total_wait_time += (current_time-running.arrival_time-running.processing_time-(running.io_duration*(running.processing_time/running.io_freq)));
+            }
             terminate_process(running,job_list);
             execution_status += print_exec_status(current_time, running.PID, RUNNING, TERMINATED);
             sync_queue(job_list,running);
             idle_CPU(running);
-            //sync_queue(job_list, running);
+            sync_queue(job_list, running);
         }
         else if (running.io_freq!=0 &&((running.processing_time-running.remaining_time)% running.io_freq) ==0) //if time to do I/O 
         {
-
+            std::cout << "waiting 2" << std::endl;
             running.state = WAITING;
             //running.remaining_time-=running.io_freq; //not sure abt this yet, nvm remove
             execution_status += print_exec_status(current_time, running.PID, RUNNING, WAITING);
@@ -132,16 +138,18 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
         }
         else if (running.state==RUNNING&&current_time-running.start_time>99)
         {
+            std::cout << "roundddddrobbiningggggggggwoooohppoo 3" << std::endl;
             execution_status+=print_exec_status(current_time, running.PID, RUNNING, READY);
             running.state=READY;
             ready_queue.insert(ready_queue.begin(),running);
             idle_CPU(running);
-            //sync_queue(job_list, running);
+            sync_queue(job_list, running);
         }
         
 
         std::cout << "midde of scheduler but not inside" << std::endl;
         if (running.state == NOT_ASSIGNED && !ready_queue.empty()){ //if cpu idle
+            std::cout << "in hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 4" << std::endl;
             //FCFS(ready_queue); //sort ready queue, not necessary because implemented FIFO innately
             run_process(running,job_list,ready_queue,current_time); //run next process
             execution_status += print_exec_status(current_time, running.PID, READY, RUNNING);
@@ -156,7 +164,14 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
         
         current_time++; //increment time once per loop
     }
-    
+    //display metrics (will be recorded possibly, didn't specifiy in assignment)
+    std::cout<<"Total Turnaround Time: "<< turnaround_time<<"ms"<<std::endl;
+    std::cout<<"Total Wait Time: "<< total_wait_time<<"ms"<<std::endl;
+
+    std::cout<<"Average Turnaround Time: "<< turnaround_time/job_list.size()<<"ms/job"<<std::endl;
+    std::cout<<"Average Wait Time: "<< total_wait_time/job_list.size()<<"ms/job"<<std::endl;
+    std::cout<<"Throughput: "<< job_list.size()<<"/"<<current_time<<"ms"<<std::endl;
+    std::cout<<"Average Response Time: "<<std::endl;
     //Close the output table
     execution_status += print_exec_footer();
     memory_status += print_memory_status(current_time, job_list);              

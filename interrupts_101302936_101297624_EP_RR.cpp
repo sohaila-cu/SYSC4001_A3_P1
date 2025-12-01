@@ -37,6 +37,8 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
                                     //to make the code easier :).
 
     unsigned int current_time = 0;
+    unsigned int total_wait_time=0;
+    unsigned int turnaround_time=0;
     PCB running;
 
     //Initialize an empty running process
@@ -119,6 +121,10 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
 
         if (!ready_queue.empty())
         {
+            turnaround_time += (current_time-running.arrival_time); //add to total
+            if (running.io_freq!=0){
+                total_wait_time += (current_time-running.arrival_time-running.processing_time-(running.io_duration*(running.processing_time/running.io_freq)));
+            }
             EP(ready_queue);
             std::cout << "prioritized at time: " << current_time << std::endl;
             if (running.state==RUNNING && running.PID>ready_queue.back().PID){
@@ -181,6 +187,14 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
         
         current_time++; //increment time once per loop
     }
+    //display metrics (will be recorded possibly, didn't specifiy in assignment)
+    std::cout<<"Total Turnaround Time: "<< turnaround_time<<"ms"<<std::endl;
+    std::cout<<"Total Wait Time: "<< total_wait_time<<"ms"<<std::endl;
+
+    std::cout<<"Average Turnaround Time: "<< turnaround_time/job_list.size()<<"ms/job"<<std::endl;
+    std::cout<<"Average Wait Time: "<< total_wait_time/job_list.size()<<"ms/job"<<std::endl;
+    std::cout<<"Throughput: "<< job_list.size()<<"/"<<current_time<<"ms"<<std::endl;
+    std::cout<<"Average Response Time: "<<std::endl;
     
     //Close the output table
     execution_status += print_exec_footer();
