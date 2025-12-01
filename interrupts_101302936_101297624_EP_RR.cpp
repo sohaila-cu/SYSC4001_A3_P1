@@ -77,7 +77,7 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
         for(auto &waiting : wait_queue) {
             //if this waiting process has finished doing IO, which is checked by:
             //calc if last time it started processing was an "IO-cycle" ago (where "IO-cycle"=freq+dur)
-            if (waiting.start_time+waiting.io_freq+waiting.io_duration >= current_time){
+            if (waiting.start_time+waiting.io_freq+waiting.io_duration <= current_time){
                 execution_status += print_exec_status(current_time, waiting.PID, WAITING, READY);
                 waiting.state= READY;
                 ready_queue.push_back(waiting);

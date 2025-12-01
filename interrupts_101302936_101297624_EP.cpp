@@ -165,7 +165,6 @@ int main(int argc, char** argv) {
         std::cout << "To run the program, do: ./interrupts <your_input_file.txt>" << std::endl;
         return -1;
     }
-    std::cout << "currently trying out FCFS" << std::endl;
     //Open the input file
     auto file_name = argv[1];
     std::ifstream input_file;
