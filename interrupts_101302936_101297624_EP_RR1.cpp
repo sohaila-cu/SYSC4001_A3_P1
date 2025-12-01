@@ -29,7 +29,7 @@ void EP(std::vector<PCB> &ready_queue) {
             );
 }
 
-std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std::vector<PCB> list_processes) {
+std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_simulation(std::vector<PCB> list_processes) {
     std::cout << "ok we in " << std::endl;
     std::vector<PCB> ready_queue;   //The ready queue of processes
     std::vector<PCB> wait_queue;    //The wait queue of processes
@@ -45,6 +45,7 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
     idle_CPU(running);
 
     std::string execution_status;
+    std::string memory_status;
 
     //make the output table (the header row)
     execution_status = print_exec_header();
@@ -69,11 +70,13 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
                     job_list.push_back(process); //Add it to the list of processes
                     std::cout << "should be writing first line here" << std::endl;
                     execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+                    memory_status += print_memory_status(current_time, job_list);
                 }else{
                     process.state=NEW;
                     job_list.push_back(process);
                     sync_queue(list_processes,process);
-                    std::cout<<"Error! Memory Allocation Failed"<<std::endl;
+                    memory_status += print_memory_status(current_time, job_list);
+                    memory_status += "Memory Allocation Failure Occured, Process will wait until memory is available.\n\n";
                 }
             } 
             if (process.state==NEW && process.arrival_time < current_time) //it is not a new arrival but it is still waiting for memory
@@ -85,13 +88,17 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
                     job_list.push_back(process); //Add it to the list of processes
                     std::cout << "should be writing second line here" << std::endl;
                     execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+                    memory_status += "Previous Memory Allocation Failure Resolved, memory was available.";  
+                    memory_status += print_memory_status(current_time, job_list);              
+
                 }else{
-                    std::cout<<"Error! Memory Allocation Failed Again"<<std::endl;
+                    //too redundant
+                    //memory_status += print_memory_status(current_time, job_list);
+                    //memory_status += "Memory Re-Allocation Failure Occured, Process will continue waiting.";
                 }
             }
             
         }
-        std::cout << "before wait queue" << std::endl;
 
         ///////////////////////MANAGE WAIT QUEUE/////////////////////////
         //This mainly involves keeping track of how long a process must remain in the ready queue
@@ -177,8 +184,8 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
     //Close the output table
     execution_status += print_exec_footer();
 
-    return std::make_tuple(execution_status);
-}
+    memory_status += print_memory_status(current_time, job_list);              
+    return std::make_tuple(execution_status,memory_status);}
 
 
 int main(int argc, char** argv) {
@@ -214,9 +221,9 @@ int main(int argc, char** argv) {
     std::cout << "abt to runn" << std::endl;
 
     //With the list of processes, run the simulation
-    auto [exec] = run_simulation(list_process);
-    std::cout << "do we come back here?" << std::endl;
+    auto [exec, mem] = run_simulation(list_process);
     write_output(exec, "execution.txt");
+    write_output(mem, "memory.txt");
 
     return 0;
 }

@@ -315,4 +315,60 @@ void idle_CPU(PCB &running) {
     running.PID = -1;
 }
 
+std::string print_memory_status(unsigned int current_time,std::vector<PCB> &job_list){
+    int used = 0;
+    int available=0;
+    
+    std::stringstream buffer;
+    const int tableWidth = 35;
+    buffer <<std::endl <<"Current Time: " << current_time<< std::endl;
+        // Print top border
+    buffer << "+" << std::setfill('-') << std::setw(tableWidth) << "+" << std::endl;
+    
+    // Print headers
+    buffer  << "|"
+            << std::setfill(' ') << std::setw(5) << "#"
+            << std::setw(2) << "|"
+            << std::setfill(' ') << std::setw(5) << "Size"
+            << std::setw(2) << "|"
+            << std::setfill(' ') << std::setw(5) << "PID"
+            << std::setw(2) << "|"
+            << std::setfill(' ') << std::setw(5) << "Used"
+            << std::setw(2) << "|"
+            << std::setfill(' ') << std::setw(5) << "Unused"
+            << std::setw(2) << "|" << std::endl;
+    
+    // Print separator
+    buffer << "+" << std::setfill('-') << std::setw(tableWidth) << "+" << std::endl;
+    for(int i = 0; i < 5; i++) {
+        used = 0;
+        for (auto &job: job_list)
+        {
+            if (job.PID==memory_paritions[i].occupied){
+                used = job.size;
+            }            
+        }
+        if (memory_paritions[i].occupied==-1){
+            available += memory_paritions[i].size;
+        }
+        buffer  << "|"
+                << std::setfill(' ') << std::setw(5)<<memory_paritions[i].partition_number
+                << std::setw(2) << "|"
+                << std::setw(5) << memory_paritions[i].size
+                << std::setw(2) << "|"
+                << std::setw(5) << memory_paritions[i].occupied
+                << std::setw(2) << "|"
+                << std::setw(5) << used
+                << std::setw(2) << "|"
+                << std::setw(5) << memory_paritions[i].size-used 
+                << std::setw(2) << "|" << std::endl;
+        }
+    buffer << "+" << std::setfill('-') << std::setw(tableWidth) << "+" << std::endl ;
+
+    buffer << "Total free memory available for use (without fragmentation): "<<available<< std::endl;
+
+    return buffer.str();
+
+}
+
 #endif

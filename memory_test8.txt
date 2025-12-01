@@ -1,0 +1,37 @@
+
+Current Time: 0
++----------------------------------+
+|    # | Size |  PID | Used |Unused |
++----------------------------------+
+|    1 |   40 |   10 |   40 |    0 |
+|    2 |   25 |   -1 |    0 |   25 |
+|    3 |   15 |   -1 |    0 |   15 |
+|    4 |   10 |   -1 |    0 |   10 |
+|    5 |    8 |   -1 |    0 |    8 |
++----------------------------------+
+Total free memory available for use (without fragmentation): 58
+
+Current Time: 3
++----------------------------------+
+|    # | Size |  PID | Used |Unused |
++----------------------------------+
+|    1 |   40 |   10 |   40 |    0 |
+|    2 |   25 |   -1 |    0 |   25 |
+|    3 |   15 |   -1 |    0 |   15 |
+|    4 |   10 |   -1 |    0 |   10 |
+|    5 |    8 |   -1 |    0 |    8 |
++----------------------------------+
+Total free memory available for use (without fragmentation): 58
+Memory Allocation Failure Occured, Process will wait until memory is available.
+Previous Memory Allocation Failure Resolved, memory was available.
+Current Time: 9
++----------------------------------+
+|    # | Size |  PID | Used |Unused |
++----------------------------------+
+|    1 |   40 |   14 |   40 |    0 |
+|    2 |   25 |   -1 |    0 |   25 |
+|    3 |   15 |   -1 |    0 |   15 |
+|    4 |   10 |   -1 |    0 |   10 |
+|    5 |    8 |   -1 |    0 |    8 |
++----------------------------------+
+Total free memory available for use (without fragmentation): 58
