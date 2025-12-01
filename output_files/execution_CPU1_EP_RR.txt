@@ -1,0 +1,13 @@
++------------------------------------------------+
+|Time of Transition |PID | Old State | New State |
++------------------------------------------------+
+|                 3 |  1 |       NEW |     READY |
+|                 3 |  1 |     READY |   RUNNING |
+|               103 |  1 |   RUNNING |     READY |
+|               103 |  1 |     READY |   RUNNING |
+|               203 |  1 |   RUNNING |     READY |
+|               203 |  1 |     READY |   RUNNING |
+|               303 |  1 |   RUNNING |     READY |
+|               303 |  1 |     READY |   RUNNING |
+|               363 |  1 |   RUNNING |TERMINATED |
++------------------------------------------------+

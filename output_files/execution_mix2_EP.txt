@@ -1,0 +1,68 @@
++------------------------------------------------+
+|Time of Transition |PID | Old State | New State |
++------------------------------------------------+
+|                 0 |  4 |       NEW |     READY |
+|                 0 |  8 |       NEW |     READY |
+|                 0 |  2 |       NEW |     READY |
+|                 0 |  7 |       NEW |     READY |
+|                 0 |  2 |     READY |   RUNNING |
+|                 3 |  3 |       NEW |     READY |
+|                 3 |  5 |       NEW |     READY |
+|               500 |  2 |   RUNNING |TERMINATED |
+|               500 |  3 |     READY |   RUNNING |
+|               550 |  3 |   RUNNING |   WAITING |
+|               550 |  4 |     READY |   RUNNING |
+|               558 |  3 |   WAITING |     READY |
+|              1050 |  4 |   RUNNING |TERMINATED |
+|              1050 |  3 |     READY |   RUNNING |
+|              1100 |  3 |   RUNNING |   WAITING |
+|              1100 |  5 |     READY |   RUNNING |
+|              1102 |  5 |   RUNNING |TERMINATED |
+|              1102 |  7 |     READY |   RUNNING |
+|              1103 |  7 |   RUNNING |   WAITING |
+|              1103 |  1 |     READY |   RUNNING |
+|              1105 |  1 |   RUNNING |TERMINATED |
+|              1105 |  8 |     READY |   RUNNING |
+|              1106 |  7 |   WAITING |     READY |
+|              1106 |  8 |   RUNNING |   WAITING |
+|              1106 |  7 |     READY |   RUNNING |
+|              1107 |  7 |   RUNNING |   WAITING |
+|              1107 |  9 |     READY |   RUNNING |
+|              1108 |  3 |   WAITING |     READY |
+|              1109 |  8 |   WAITING |     READY |
+|              1110 |  7 |   WAITING |     READY |
+|              1157 |  9 |   RUNNING |   WAITING |
+|              1157 |  3 |     READY |   RUNNING |
+|              1165 |  9 |   WAITING |     READY |
+|              1207 |  3 |   RUNNING |   WAITING |
+|              1207 |  7 |     READY |   RUNNING |
+|              1208 |  7 |   RUNNING |   WAITING |
+|              1208 |  8 |     READY |   RUNNING |
+|              1209 |  8 |   RUNNING |   WAITING |
+|              1209 |  9 |     READY |   RUNNING |
+|              1211 |  7 |   WAITING |     READY |
+|              1212 |  8 |   WAITING |     READY |
+|              1215 |  3 |   WAITING |     READY |
+|              1259 |  9 |   RUNNING |   WAITING |
+|              1259 |  3 |     READY |   RUNNING |
+|              1267 |  9 |   WAITING |     READY |
+|              1309 |  3 |   RUNNING |TERMINATED |
+|              1309 |  7 |     READY |   RUNNING |
+|              1310 |  7 |   RUNNING |   WAITING |
+|              1310 |  8 |     READY |   RUNNING |
+|              1311 |  8 |   RUNNING |   WAITING |
+|              1311 |  9 |     READY |   RUNNING |
+|              1313 |  7 |   WAITING |     READY |
+|              1314 |  8 |   WAITING |     READY |
+|              1361 |  9 |   RUNNING |   WAITING |
+|              1361 |  7 |     READY |   RUNNING |
+|              1362 |  7 |   RUNNING |TERMINATED |
+|              1362 |  8 |     READY |   RUNNING |
+|              1363 |  8 |   RUNNING |   WAITING |
+|              1366 |  8 |   WAITING |     READY |
+|              1366 |  8 |     READY |   RUNNING |
+|              1367 |  8 |   RUNNING |TERMINATED |
+|              1369 |  9 |   WAITING |     READY |
+|              1369 |  9 |     READY |   RUNNING |
+|              1419 |  9 |   RUNNING |TERMINATED |
++------------------------------------------------+

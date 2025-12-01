@@ -198,6 +198,7 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
     
     //Close the output table
     execution_status += print_exec_footer();
+    memory_status += print_memory_status(current_time,job_list);
 
     return std::make_tuple(execution_status,memory_status);
 }
