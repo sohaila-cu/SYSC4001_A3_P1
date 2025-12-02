@@ -23,7 +23,7 @@ Current Time: 3
 +----------------------------------+
 Total free memory available for use (without fragmentation): 90
 
-Current Time: 16
+Current Time: 316
 +----------------------------------+
 |    # | Size |  PID | Used |Unused |
 +----------------------------------+

@@ -58,9 +58,10 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
                 if (assign_memory(process)){ //if memory allocation succeeded
                     std::cout << "memory assigned" << std::endl;
                     process.state = READY;  //Set the process state to READY
-                    ready_queue.push_back(process); //Add the process to the ready queue
+                    ready_queue.insert(ready_queue.begin(),process); //Add the process to the ready queue
                     job_list.push_back(process); //Add it to the list of processes
                     execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+                    sync_queue(job_list,running);
                     memory_status += print_memory_status(current_time, job_list);
                 }else{
                     process.state=NEW;
@@ -76,7 +77,7 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
                 //try to assign memory and put the process into the ready queue
                 if (assign_memory(process)){ //if memory allocation succeeded
                     process.state = READY;  //Set the process state to READY
-                    ready_queue.push_back(process); //Add the process to the ready queue
+                    ready_queue.insert(ready_queue.begin(),process); //Add the process to the ready queue
                     job_list.push_back(process); //Add it to the list of processes
                     execution_status += print_exec_status(current_time, process.PID, NEW, READY);
                     memory_status += "Previous Memory Allocation Failure Resolved, memory was available.";  
@@ -101,7 +102,7 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
             if (waiting.start_time+waiting.io_freq+waiting.io_duration <= current_time){
                 execution_status += print_exec_status(current_time, waiting.PID, WAITING, READY);
                 waiting.state= READY;
-                ready_queue.insert(wait_queue.begin(),waiting);
+                ready_queue.insert(ready_queue.begin(),waiting);
                 wait_queue.erase(wait_queue.begin()+wait_index);
 
             }
@@ -113,6 +114,8 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
 
         //////////////////////////SCHEDULER//////////////////////////////
         std::cout << "before scheduler" << std::endl;
+        std::cout << "running: "<<running.PID << std::endl;
+
 
         if (running.state==RUNNING&& running.remaining_time == 0) //higher priority than I/O
         {
@@ -121,13 +124,18 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
             if (running.io_freq!=0){
                 total_wait_time += (current_time-running.arrival_time-running.processing_time-(running.io_duration*(running.processing_time/running.io_freq)));
             }
+            else
+            {
+                total_wait_time += (current_time-running.arrival_time-running.processing_time);
+            }
+            
             terminate_process(running,job_list);
             execution_status += print_exec_status(current_time, running.PID, RUNNING, TERMINATED);
             sync_queue(job_list,running);
             idle_CPU(running);
             sync_queue(job_list, running);
         }
-        else if (running.io_freq!=0 &&((running.processing_time-running.remaining_time)% running.io_freq) ==0) //if time to do I/O 
+        else if ((running.state==RUNNING)&& (running.io_freq!=0)&&(((running.processing_time-running.remaining_time)% running.io_freq) ==0)) //if time to do I/O 
         {
             std::cout << "waiting 2" << std::endl;
             running.state = WAITING;

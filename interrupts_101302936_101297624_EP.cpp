@@ -69,6 +69,7 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
                     ready_queue.push_back(process); //Add the process to the ready queue
                     job_list.push_back(process); //Add it to the list of processes
                     execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+                    sync_queue(job_list,running);
                     memory_status += print_memory_status(current_time, job_list);
                 }else{
                     process.state=NEW;
@@ -123,6 +124,10 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
             turnaround_time += (current_time-running.arrival_time); //add to total
             if (running.io_freq!=0){
                 total_wait_time += (current_time-running.arrival_time-running.processing_time-(running.io_duration*(running.processing_time/running.io_freq)));
+            }
+            else
+            {
+                total_wait_time += (current_time-running.arrival_time-running.processing_time);
             }
             terminate_process(running,job_list);
             execution_status += print_exec_status(current_time, running.PID, RUNNING, TERMINATED);

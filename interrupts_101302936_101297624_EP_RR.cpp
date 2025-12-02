@@ -68,6 +68,8 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
                     ready_queue.push_back(process); //Add the process to the ready queue
                     job_list.push_back(process); //Add it to the list of processes
                     execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+                    sync_queue(job_list,running);
+
                     memory_status += print_memory_status(current_time, job_list);
                 }else{
                     process.state=NEW;
@@ -121,10 +123,6 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
 
         if (!ready_queue.empty())
         {
-            turnaround_time += (current_time-running.arrival_time); //add to total
-            if (running.io_freq!=0){
-                total_wait_time += (current_time-running.arrival_time-running.processing_time-(running.io_duration*(running.processing_time/running.io_freq)));
-            }
             EP(ready_queue);
             std::cout << "prioritized at time: " << current_time << std::endl;
             if (running.state==RUNNING && running.PID>ready_queue.back().PID){
@@ -140,16 +138,22 @@ std::tuple<std::string, std::string /* add std::string for bonus mark */ > run_s
         }
         if (running.state==RUNNING&& running.remaining_time == 0) //higher priority than I/O
         {
-
+            turnaround_time += (current_time-running.arrival_time); //add to total
+            if (running.io_freq!=0){
+                total_wait_time += (current_time-running.arrival_time-running.processing_time-(running.io_duration*(running.processing_time/running.io_freq)));
+            }            
+            else
+            {
+                total_wait_time += (current_time-running.arrival_time-running.processing_time);
+            }
             terminate_process(running,job_list);
             execution_status += print_exec_status(current_time, running.PID, RUNNING, TERMINATED);
             sync_queue(job_list,running);
             idle_CPU(running);
             //sync_queue(job_list, running);
         }
-        else if (running.state==RUNNING&& running.io_freq!=0&&((running.processing_time-running.remaining_time)% running.io_freq) ==0) //if time to do I/O 
+        else if ((running.state==RUNNING)&& (running.io_freq!=0)&&(((running.processing_time-running.remaining_time)% running.io_freq) ==0)) //if time to do I/O 
         {
-
             running.state = WAITING;
             //running.remaining_time-=running.io_freq; //not sure abt this yet, nvm remove
             execution_status += print_exec_status(current_time, running.PID, RUNNING, WAITING);
