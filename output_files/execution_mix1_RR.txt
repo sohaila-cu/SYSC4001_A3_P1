@@ -1,0 +1,45 @@
++------------------------------------------------+
+|Time of Transition |PID | Old State | New State |
++------------------------------------------------+
+|                 0 |  4 |       NEW |     READY |
+|                 0 |  8 |       NEW |     READY |
+|                 0 |  4 |     READY |   RUNNING |
+|                 3 |  3 |       NEW |     READY |
+|                 3 |  1 |       NEW |     READY |
+|               100 |  4 |   RUNNING |     READY |
+|               100 |  8 |     READY |   RUNNING |
+|               101 |  8 |   RUNNING |   WAITING |
+|               101 |  3 |     READY |   RUNNING |
+|               104 |  8 |   WAITING |     READY |
+|               151 |  3 |   RUNNING |   WAITING |
+|               151 |  1 |     READY |   RUNNING |
+|               153 |  1 |   RUNNING |TERMINATED |
+|               153 |  4 |     READY |   RUNNING |
+|               159 |  3 |   WAITING |     READY |
+|               253 |  4 |   RUNNING |     READY |
+|               253 |  8 |     READY |   RUNNING |
+|               254 |  8 |   RUNNING |   WAITING |
+|               254 |  3 |     READY |   RUNNING |
+|               257 |  8 |   WAITING |     READY |
+|               304 |  3 |   RUNNING |   WAITING |
+|               304 |  4 |     READY |   RUNNING |
+|               312 |  3 |   WAITING |     READY |
+|               404 |  4 |   RUNNING |     READY |
+|               404 |  8 |     READY |   RUNNING |
+|               405 |  8 |   RUNNING |   WAITING |
+|               405 |  3 |     READY |   RUNNING |
+|               408 |  8 |   WAITING |     READY |
+|               455 |  3 |   RUNNING |   WAITING |
+|               455 |  4 |     READY |   RUNNING |
+|               463 |  3 |   WAITING |     READY |
+|               555 |  4 |   RUNNING |     READY |
+|               555 |  8 |     READY |   RUNNING |
+|               556 |  8 |   RUNNING |   WAITING |
+|               556 |  3 |     READY |   RUNNING |
+|               559 |  8 |   WAITING |     READY |
+|               606 |  3 |   RUNNING |TERMINATED |
+|               606 |  4 |     READY |   RUNNING |
+|               706 |  4 |   RUNNING |TERMINATED |
+|               706 |  8 |     READY |   RUNNING |
+|               707 |  8 |   RUNNING |TERMINATED |
++------------------------------------------------+
